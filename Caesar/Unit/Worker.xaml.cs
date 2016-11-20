@@ -20,8 +20,12 @@ namespace Caesar
     /// </summary>
     public partial class Worker : UserControl
     {
+        bool WithGoods { get; set; }
+        int Direction { get; set; }
+
         public Worker()
         {
+            WithGoods = true;
             InitializeComponent();
         }
     }

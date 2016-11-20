@@ -230,13 +230,13 @@ namespace Caesar
                     _fieldMatrix[i, j] = new Cell();
                     _fieldMatrix[i, j].Type = 0;
                     _fieldMatrix[i, j].Visit = false;
-                    _fieldMatrix[i, j].XIndex = i;
-                    _fieldMatrix[i, j].YIndex = j;
+                    _fieldMatrix[i, j].YIndex = i;
+                    _fieldMatrix[i, j].XIndex = j;
                 }
             }
         }
 
-        bool CheckFree(/*int width, int height,*/ int x, int y)
+        bool CheckFree(int width, /*int height,*/ int x, int y)
         {
             if (x > _field.Width || y > _field.Height)
             {
@@ -244,8 +244,14 @@ namespace Caesar
             }
             else
             {
-                if (_fieldMatrix[y / 40, x / 40].Type != 0)
-                            return false; 
+                for (int i = 0; i < width / 40; i++)
+                {
+                    for (int j = 0; j < width / 40; j++)
+                    {
+                        if (_fieldMatrix[y / 40 + i, x / 40 + j].Type != 0)
+                            return false;
+                    }
+                }
                 return true;
             }
         }
@@ -310,7 +316,7 @@ namespace Caesar
             int xCoord = RoundPosition(x);
             int yCoord = RoundPosition(y);
             Home home = new Home(xCoord, yCoord);
-            if (CheckFree(/*(int)home.Width + xCoord, (int)home.Height + yCoord,*/ xCoord, yCoord))
+            if (CheckFree((int)home.Width,/* + xCoord, (int)home.Height + yCoord,*/ xCoord, yCoord))
             {
                 //_buildGraf.AddNode(xCoord, yCoord, 1);
                 //FindRoad(xCoord, yCoord, 1, (int)home.Width);
@@ -331,7 +337,7 @@ namespace Caesar
             int xCoord = RoundPosition(x);
             int yCoord = RoundPosition(y);
             Farm farm = new Farm(xCoord, yCoord);
-            if (CheckFree(/*(int)farm.Width + xCoord, (int)farm.Height + yCoord,*/ xCoord, yCoord))
+            if (CheckFree((int)farm.Width,/* + xCoord, (int)farm.Height + yCoord,*/ xCoord, yCoord))
             {
                 Buildings.Add(farm);
                 //_buildGraf.AddNode(xCoord, yCoord, 2);
@@ -339,15 +345,15 @@ namespace Caesar
                 _field.Children.Add(farm);
                 Resources[0] -= farm.Cost;
                 farm.Id = _id;
-                if (farm.Worker >= FreePeoples)
+                FillField((int)farm.Width/* + xCoord, (int)home.Height + yCoord*/, xCoord, yCoord, _id, 2);
+                if (farm.Worker <= FreePeoples)
                 {
                     FreePeoples -= farm.Worker;
                     farm.needPeople = false;
-                    farm.Start();
+                    farm.Start(_fieldMatrix);
                     //farm.ReadyFood += TransportFood;
                 }
                 //farm.ReadyFood += TransportFood;
-                FillField((int)farm.Width/* + xCoord, (int)home.Height + yCoord*/, xCoord, yCoord, _id, 2);
                 _id++;
             }
         }
@@ -357,7 +363,7 @@ namespace Caesar
             int xCoord = RoundPosition(x);
             int yCoord = RoundPosition(y);
             Storage storage = new Storage(xCoord, yCoord);
-            if (CheckFree(/*(int)storage.Width + xCoord, (int)storage.Height + yCoord,*/ xCoord, yCoord))
+            if (CheckFree((int)storage.Width,/* + xCoord, (int)storage.Height + yCoord,*/ xCoord, yCoord))
             {
                 Buildings.Add(storage);
                 //_buildGraf.AddNode(xCoord, yCoord, 3);
@@ -365,7 +371,7 @@ namespace Caesar
                 _field.Children.Add(storage);
                 Resources[0] -= storage.Cost;
                 storage.Id = _id;
-                if (storage.Worker >= FreePeoples)
+                if (storage.Worker <= FreePeoples)
                 {
                     FreePeoples -= storage.Worker;
                     storage.needPeople = false;
@@ -380,7 +386,7 @@ namespace Caesar
             int xCoord = RoundPosition(x);
             int yCoord = RoundPosition(y);
             Draw_well draw_well = new Draw_well(xCoord, yCoord);
-            if (CheckFree(/*(int)draw_well.Width + xCoord, (int)draw_well.Height + yCoord, */xCoord, yCoord))
+            if (CheckFree((int)draw_well.Width,/* + xCoord, (int)draw_well.Height + yCoord, */xCoord, yCoord))
             {
                 Buildings.Add(draw_well);
                 //_buildGraf.AddNode(xCoord, yCoord, 4);
@@ -397,7 +403,7 @@ namespace Caesar
             int xCoord = RoundPosition(x);
             int yCoord = RoundPosition(y);
             Road road = new Road(xCoord, yCoord);
-            if (CheckFree(/*(int)road.Width + xCoord, (int)road.Height + yCoord, */xCoord, yCoord))
+            if (CheckFree((int)road.Width,/* + xCoord, (int)road.Height + yCoord, */xCoord, yCoord))
             {
                 if (roads.Count != 0)
                 {
@@ -468,7 +474,7 @@ namespace Caesar
             _field.Children.Remove(testBuilding);
             int xCoord = RoundPosition(x);
             int yCoord = RoundPosition(y);
-            if (xCoord < RoundPosition((int)_field.Width) && yCoord < RoundPosition((int)_field.Height))
+            if (xCoord + height < RoundPosition((int)_field.Width) && yCoord + width < RoundPosition((int)_field.Height))
             {
                 //int xCoord = RoundPosition(x);
                 //int yCoord = RoundPosition(y);
@@ -476,7 +482,7 @@ namespace Caesar
                 testBuilding.Width = width;
                 testBuilding.Height = height;
                 testBuilding.Opacity = 0.75;
-                if (CheckFree(/*width + xCoord, height + yCoord,*/ xCoord, yCoord))
+                if (CheckFree(width,/* + xCoord, height + yCoord,*/ xCoord, yCoord))
                 {
                     testBuilding.Fill = Brushes.DarkSeaGreen;
                 }

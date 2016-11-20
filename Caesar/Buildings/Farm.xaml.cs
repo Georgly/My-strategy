@@ -41,9 +41,10 @@ namespace Caesar
             work.Tick += Work_Tick;
         }
 
-        public void Start()
+        public void Start(Cell[,] field)
         {
             work.Start();
+            FindWay(_x, _y, (int)this.Width, 3, field);
         }
 
         private void Work_Tick(object sender, EventArgs e)
@@ -67,6 +68,7 @@ namespace Caesar
             if (map[startPointY / 40 + startWidth / 40, startPointX / 40].Type == 5)
             {
                 map[startPointY / 40 + startWidth / 40, startPointX / 40].Weight = weight;
+                map[startPointY / 40 + startWidth / 40, startPointX / 40].Visit = true;
                 startCell = map[startPointY / 40 + startWidth / 40, startPointX / 40];
                 oldCelles.Add(startCell);
             }
@@ -78,17 +80,25 @@ namespace Caesar
                 {
                     Cell check = oldCelles[i];
                     //TODO посмотреть потом, как оптимизировать: убрать четыре ифа с одинаковым содержанием
-                    if (check.XIndex > 0 && check.XIndex < map.GetLength(1)
-                        && check.YIndex - 1 > 0 && check.YIndex - 1 < map.GetLength(0))
+                    if (check.XIndex >= 0 && check.XIndex < map.GetLength(1)
+                        && check.YIndex - 1 >= 0 && check.YIndex - 1 < map.GetLength(0))
                     {
                         if (!map[check.YIndex - 1, check.XIndex].Visit)
                         {
+                            map[check.YIndex - 1, check.XIndex].Visit = true;
                             if (map[check.YIndex - 1, check.XIndex].Type == endType)
                             {
-                                map[check.YIndex - 1, check.XIndex].Weight = weight;
-                                if (map[check.YIndex - 1, check.XIndex].Weight < endCell.Weight)
+                                if (check.XIndex - 1 >= 0 && map[check.YIndex - 1, check.XIndex - 1].Type == endType)
                                 {
-                                    endCell = map[check.YIndex - 1, check.XIndex];
+                                    //break;
+                                }
+                                else
+                                {
+                                    map[check.YIndex - 1, check.XIndex].Weight = weight;
+                                    if (map[check.YIndex - 1, check.XIndex].Weight < endCell.Weight)
+                                    {
+                                        endCell = map[check.YIndex - 1, check.XIndex];
+                                    }
                                 }
                             }
                             else if (map[check.YIndex - 1, check.XIndex].Type == 5)
@@ -99,10 +109,11 @@ namespace Caesar
                         }
                     }
                     if (check.XIndex + 1 > 0 && check.XIndex + 1 < map.GetLength(1)
-                        && check.YIndex > 0 && check.YIndex < map.GetLength(0))
+                        && check.YIndex >= 0 && check.YIndex < map.GetLength(0))
                     {
                         if (!map[check.YIndex, check.XIndex + 1].Visit)
                         {
+                            map[check.YIndex, check.XIndex + 1].Visit = true;
                             if (map[check.YIndex, check.XIndex + 1].Type == 5)
                             {
                                 map[check.YIndex, check.XIndex + 1].Weight = weight;
@@ -110,11 +121,12 @@ namespace Caesar
                             }
                         }
                     }
-                    if (check.XIndex > 0 && check.XIndex < map.GetLength(1)
+                    if (check.XIndex >= 0 && check.XIndex < map.GetLength(1)
                         && check.YIndex + 1 > 0 && check.YIndex + 1 < map.GetLength(0))
                     {
                         if (!map[check.YIndex + 1, check.XIndex].Visit)
                         {
+                            map[check.YIndex + 1, check.XIndex].Visit = true;
                             if (map[check.YIndex + 1, check.XIndex].Type == 5)
                             {
                                 map[check.YIndex + 1, check.XIndex].Weight = weight;
@@ -122,11 +134,12 @@ namespace Caesar
                             }
                         }
                     }
-                    if (check.XIndex - 1 > 0 && check.XIndex - 1 < map.GetLength(1)
-                        && check.YIndex > 0 && check.YIndex < map.GetLength(0))
+                    if (check.XIndex - 1 >= 0 && check.XIndex - 1 < map.GetLength(1)
+                        && check.YIndex >= 0 && check.YIndex < map.GetLength(0))
                     {
                         if (!map[check.YIndex, check.XIndex - 1].Visit)
                         {
+                            map[check.YIndex, check.XIndex - 1].Visit = true;
                             if (map[check.YIndex, check.XIndex - 1].Type == 5)
                             {
                                 map[check.YIndex, check.XIndex - 1].Weight = weight;
@@ -135,34 +148,40 @@ namespace Caesar
                         }
                     }
                 }
-                oldCelles = findCelles;
+                //oldCelles = findCelles;
+                oldCelles.Clear();
+                for (int i = 0; i < findCelles.Count; i++)
+                {
+                    oldCelles.Add(findCelles[i]);
+                }
+                findCelles.Clear();
             }
             // путь
-            if (endCell.Weight < map.Length)
+            if (endCell.Weight < map.Length)// надо посмотреть индексы - скорее всего надо будет ещё ифов делать
             {
                 Cell pathCell = map[endCell.YIndex + 1, endCell.XIndex];
                 //path.Add(pathCell);
                 while (pathCell.Weight != 0)
                 {
-                    if (map[endCell.YIndex + 1, endCell.XIndex].Weight == pathCell.Weight - 1)
+                    if (map[pathCell.YIndex + 1, pathCell.XIndex].Weight == pathCell.Weight - 1)
                     {
                         path.Add(pathCell);
-                        pathCell = map[endCell.YIndex + 1, endCell.XIndex];
+                        pathCell = map[pathCell.YIndex + 1, pathCell.XIndex];
                     }
-                    else if (map[endCell.YIndex, endCell.XIndex - 1].Weight == pathCell.Weight - 1)
+                    else if (map[pathCell.YIndex, pathCell.XIndex - 1].Weight == pathCell.Weight - 1)
                     {
                         path.Add(pathCell);
-                        pathCell = map[endCell.YIndex, endCell.XIndex - 1];
+                        pathCell = map[pathCell.YIndex, pathCell.XIndex - 1];
                     }
-                    else if (map[endCell.YIndex - 1, endCell.XIndex].Weight == pathCell.Weight - 1)
+                    else if (map[pathCell.YIndex - 1, pathCell.XIndex].Weight == pathCell.Weight - 1)
                     {
                         path.Add(pathCell);
-                        pathCell = map[endCell.YIndex - 1, endCell.XIndex];
+                        pathCell = map[pathCell.YIndex - 1, pathCell.XIndex];
                     }
-                    else if (map[endCell.YIndex, endCell.XIndex + 1].Weight == pathCell.Weight - 1)
+                    else if (map[pathCell.YIndex, pathCell.XIndex + 1].Weight == pathCell.Weight - 1)
                     {
                         path.Add(pathCell);
-                        pathCell = map[endCell.YIndex, endCell.XIndex + 1];
+                        pathCell = map[pathCell.YIndex, pathCell.XIndex + 1];
                     }
                 }
                 path.Add(startCell);

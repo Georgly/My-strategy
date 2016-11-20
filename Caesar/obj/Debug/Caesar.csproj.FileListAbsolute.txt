@@ -23,3 +23,4 @@ C:\Users\EgorV_000.PROMETEUS\Documentation\Univer\Programm\С#-proj\Caesar\Caesa
 C:\Users\EgorV_000.PROMETEUS\Documentation\Univer\Programm\С#-proj\Caesar\Caesar\obj\Debug\Buildings\Road.baml
 C:\Users\EgorV_000.PROMETEUS\Documentation\Univer\Programm\С#-proj\Caesar\Caesar\obj\Debug\Buildings\Storage.baml
 C:\Users\EgorV_000.PROMETEUS\Documentation\Univer\Programm\С#-proj\Caesar\Caesar\obj\Debug\Unit\Worker.baml
+C:\Users\EgorV_000.PROMETEUS\Documentation\Univer\Programm\С#-proj\Caesar\Caesar\obj\Debug\Caesar.csprojResolveAssemblyReference.cache

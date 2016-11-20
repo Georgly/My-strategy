@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Caesar
 {
-    class Cell
+    public class Cell
     {
         public int Type { get; set; }
         public int Id { get; set; }
