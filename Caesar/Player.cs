@@ -61,7 +61,6 @@ namespace Caesar
         private void Eat_Tick(object sender, EventArgs e)
         {
             Resources[1] -= (int)(0.5 * Peoples);
-            //foodL.Dispatcher.InvokeAsync(() => { foodL.Content = Resources[1]; });
             Refresh(null, null);
         }
 
@@ -346,16 +345,31 @@ namespace Caesar
                 Resources[0] -= farm.Cost;
                 farm.Id = _id;
                 FillField((int)farm.Width/* + xCoord, (int)home.Height + yCoord*/, xCoord, yCoord, _id, 2);
-                if (farm.Worker <= FreePeoples)
+                if (farm.WorkerCount <= FreePeoples)
                 {
-                    FreePeoples -= farm.Worker;
+                    FreePeoples -= farm.WorkerCount;
                     farm.needPeople = false;
                     farm.Start(_fieldMatrix);
                     //farm.ReadyFood += TransportFood;
                 }
+                farm.Create += AddToCanvas;
+                farm.Remove += RemoveFromCanvas;
                 //farm.ReadyFood += TransportFood;
                 _id++;
             }
+        }
+
+        void AddToCanvas(Worker worker)//не меняется количество еды!
+        {
+            _field.Children.Add(worker);
+            Panel.SetZIndex(worker, int.MaxValue);
+        }
+
+        void RemoveFromCanvas(Worker worker)
+        {
+            _field.Children.Remove(worker);
+
+            ((Farm)Buildings[worker.Id] as Farm).Start(_fieldMatrix);
         }
 
         public void BuildStorage(int x, int y)
@@ -474,7 +488,7 @@ namespace Caesar
             _field.Children.Remove(testBuilding);
             int xCoord = RoundPosition(x);
             int yCoord = RoundPosition(y);
-            if (xCoord + height < RoundPosition((int)_field.Width) && yCoord + width < RoundPosition((int)_field.Height))
+            if (xCoord + height <= RoundPosition((int)_field.Width) && yCoord + width <= RoundPosition((int)_field.Height))
             {
                 //int xCoord = RoundPosition(x);
                 //int yCoord = RoundPosition(y);

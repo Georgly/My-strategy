@@ -20,12 +20,15 @@ namespace Caesar
     /// </summary>
     public partial class Worker : UserControl
     {
-        bool WithGoods { get; set; }
-        int Direction { get; set; }
+        public bool WithGoods { get; set; }
+        public int Id { get; set; }
+        //int Direction { get; set; }
 
-        public Worker()
+        public Worker(int x, int y, int id)
         {
             WithGoods = true;
+            Margin = new Thickness(x, y, 0, 0);
+            Id = id;
             InitializeComponent();
         }
     }
