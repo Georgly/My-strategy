@@ -20,7 +20,7 @@ namespace Caesar
     /// </summary>
     public partial class Draw_well : UserControl, IBuilding
     {
-        const int cost = 30;
+        const int cost = 20;
         int _x, _y;
         public int Id { get; set; }
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Caesar
 {
-    public class Cell
+    public struct Cell
     {
         public int Type { get; set; }
         public int Id { get; set; }
@@ -15,18 +15,18 @@ namespace Caesar
         public int XIndex { get; set; }
         public int YIndex { get; set; }
 
-        public Cell()
-        {}
+        //public Cell()
+        //{}
 
-        public Cell(int id, int type)
-        {
-            Id = id;
-            Type = type;
-        }
+        //public Cell(int id, int type)
+        //{
+        //    Id = id;
+        //    Type = type;
+        //}
 
-        public Cell(int type)
-        {
-            Type = type;
-        }
+        //public Cell(int type)
+        //{
+        //    Type = type;
+        //}
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,7 +22,7 @@ namespace Caesar
     /// </summary>
     public partial class Farm : UserControl, IBuilding
     {
-        const int cost = 150;
+        const int cost = 250;
         const int workerCount = 10;
         const int product = 50;
         //bool goPeople = true;
@@ -33,28 +34,35 @@ namespace Caesar
         Cell[,] map;
         List<Cell> _path;
         int distance;
-        DispatcherTimer toStorage;//TODO !!!надо срочно сделать перемещение!!!
+        DispatcherTimer toStorage;
         DispatcherTimer fromStorage;
 
-        public Farm(int x, int y)
+        public Farm(int x, int y, int id)
         {
             InitializeComponent();
+            Id = id;
             _path = new List<Cell>();
             _x = x;
             _y = y;
-            int y2 = (int)(y + Height);
-            worker = new Worker(x, y2, Id);
+            worker = new Worker(X, (int)(Y + Height), Id);
             Margin = new Thickness(x, y, 0, 0);
             work = new DispatcherTimer();
-
-            work.Interval = TimeSpan.FromSeconds(30);
+            work.Interval = TimeSpan.FromMinutes(2);
             work.Tick += Work_Tick;
         }
 
         public void Start(Cell[,] field)
         {
+            map = new Cell[field.GetLength(0), field.GetLength(0)];
             work.Start();
-            map = field;
+            for (int i = 0; i < map.GetLength(0); i++)
+            {
+                for (int j = 0; j < map.GetLength(0); j++)
+                {
+                    map[i, j] = field[i, j];
+                }
+            }
+            //map = field;
             //FindWay(_x, _y, (int)/*this.*/Width, 3/*, field*/);
         }
 
@@ -63,6 +71,7 @@ namespace Caesar
             //goPeople = false;
             //SentFood(null, null);
             work.Stop();
+            //_path.Clear();
             _path = FindWay(_x, _y, (int)this.Width, 3/*, field*/);
             map = null;
             if (_path != null)
@@ -82,14 +91,14 @@ namespace Caesar
             {
                 toStorage.Stop();
                 fromStorage = new DispatcherTimer();
-                fromStorage.Interval = TimeSpan.FromMilliseconds(10);
+                fromStorage.Interval = TimeSpan.FromMilliseconds(25);
                 fromStorage.Tick += FromStorage_Tick;
                 fromStorage.Start();
             }
             else
             {
-                worker.Margin = new Thickness(worker.Margin.Left + (_path[distance - 1].XIndex * 40 - _path[distance].XIndex * 40) / 20,
-                    worker.Margin.Top + (_path[distance - 1].YIndex * 40 - _path[distance].YIndex * 40) / 20, 0, 0);
+                worker.Margin = new Thickness(worker.Margin.Left + (_path[distance - 1].XIndex * 40 - _path[distance].XIndex * 40) / 40,
+                    worker.Margin.Top + (_path[distance - 1].YIndex * 40 - _path[distance].YIndex * 40) / 40, 0, 0);
                 if (worker.Margin.Left == _path[distance - 1].XIndex * 40 && worker.Margin.Top == _path[distance - 1].YIndex * 40)
                 {
                     distance--;
@@ -99,16 +108,16 @@ namespace Caesar
 
         private void FromStorage_Tick(object sender, EventArgs e)
         {
-            if (distance == _path.Count)
+            if (distance == _path.Count - 1)
             {
                 fromStorage.Stop();
                 DeleteWorker(null, null);
             }
             else
             {
-                worker.Margin = new Thickness(Margin.Left + (_path[distance].XIndex * 40 - _path[distance - 1].XIndex * 40) / 20,
-                    Margin.Top + (_path[distance].YIndex * 40 - _path[distance - 1].YIndex * 40) / 20, 0, 0);
-                if (worker.Margin.Left == _path[distance].XIndex * 40 && worker.Margin.Top == _path[distance].YIndex * 40)
+                worker.Margin = new Thickness(worker.Margin.Left + (_path[distance + 1].XIndex * 40 - _path[distance].XIndex * 40) / 20,
+                    worker.Margin.Top + (_path[distance + 1].YIndex * 40 - _path[distance].YIndex * 40) / 20, 0, 0);
+                if (worker.Margin.Left == _path[distance + 1].XIndex * 40 && worker.Margin.Top == _path[distance + 1].YIndex * 40)
                 {
                     distance++;
                 }
@@ -117,7 +126,7 @@ namespace Caesar
 
         List<Cell> FindWay(int startPointX, int startPointY, int startWidth, int endType/*, Cell[,] field*/)
         {
-            Cell endCell = new Cell(endType);
+            Cell endCell = new Cell();
             endCell.Weight = int.MaxValue;
             Cell startCell = new Cell();
             int weight = 0;
@@ -264,12 +273,12 @@ namespace Caesar
             Remove(worker);
         }
 
-        //public delegate void Send();
-        //public event Send ReadyFood;
-        //public void SentFood(object sender, EventArgs e)
-        //{
-        //    ReadyFood();
-        //}
+        public delegate void Send(Farm farm);
+        public event Send ReadyFood;
+        public void SentFood(object sender, EventArgs e)
+        {
+            ReadyFood(this);
+        }
 
         public int X
         {

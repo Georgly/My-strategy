@@ -26,10 +26,10 @@ namespace Caesar
 
         public Worker(int x, int y, int id)
         {
+            InitializeComponent();
             WithGoods = true;
             Margin = new Thickness(x, y, 0, 0);
             Id = id;
-            InitializeComponent();
         }
     }
 }

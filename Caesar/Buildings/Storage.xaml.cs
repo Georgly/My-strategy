@@ -20,7 +20,7 @@ namespace Caesar
     /// </summary>
     public partial class Storage : UserControl, IBuilding
     {
-        const int cost = 100;
+        const int cost = 150;
         const int worker = 10;
         public bool needPeople = true;
         int _bread;

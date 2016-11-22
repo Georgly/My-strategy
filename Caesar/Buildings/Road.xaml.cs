@@ -20,7 +20,7 @@ namespace Caesar
     /// </summary>
     public partial class Road : UserControl, IBuilding
     {
-        const int cost = 20;
+        const int cost = 50;
         int _x, _y;
         public int Id { get; set; }
 

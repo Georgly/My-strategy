@@ -60,7 +60,7 @@ namespace Caesar
 
         private void Eat_Tick(object sender, EventArgs e)
         {
-            Resources[1] -= (int)(0.5 * Peoples);
+            Resources[1] -= Peoples;
             Refresh(null, null);
         }
 
@@ -95,11 +95,15 @@ namespace Caesar
 
         void TakeMoney()//сбор налогов в конце года
         {
-
+            Resources[0] += 2 * (Peoples - FreePeoples) + FreePeoples;
+            Refresh(null, null);
         }
 
-        //void TransportFood()//отправка доставщика с фермы в амбар и обратно
-        //{ }
+        void TransportFood(Farm farm)
+        {
+            Resources[1] += farm.Product;
+            Refresh(null, null);
+        }
 
         //List<Cell> FindWay(int startPointX, int startPointY, int startWidth, /*int endPointX, int endPointY,*/ int endType, Cell[,] field)// not ready shit!
         //{
@@ -335,7 +339,7 @@ namespace Caesar
         {
             int xCoord = RoundPosition(x);
             int yCoord = RoundPosition(y);
-            Farm farm = new Farm(xCoord, yCoord);
+            Farm farm = new Farm(xCoord, yCoord, _id);
             if (CheckFree((int)farm.Width,/* + xCoord, (int)farm.Height + yCoord,*/ xCoord, yCoord))
             {
                 Buildings.Add(farm);
@@ -343,7 +347,7 @@ namespace Caesar
                 //FindRoad(xCoord, yCoord, 2, (int)farm.Width);
                 _field.Children.Add(farm);
                 Resources[0] -= farm.Cost;
-                farm.Id = _id;
+                //farm.Id = _id;
                 FillField((int)farm.Width/* + xCoord, (int)home.Height + yCoord*/, xCoord, yCoord, _id, 2);
                 if (farm.WorkerCount <= FreePeoples)
                 {
@@ -354,12 +358,13 @@ namespace Caesar
                 }
                 farm.Create += AddToCanvas;
                 farm.Remove += RemoveFromCanvas;
+                farm.ReadyFood += TransportFood;
                 //farm.ReadyFood += TransportFood;
                 _id++;
             }
         }
 
-        void AddToCanvas(Worker worker)//не меняется количество еды!
+        void AddToCanvas(Worker worker)
         {
             _field.Children.Add(worker);
             Panel.SetZIndex(worker, int.MaxValue);
@@ -368,8 +373,7 @@ namespace Caesar
         void RemoveFromCanvas(Worker worker)
         {
             _field.Children.Remove(worker);
-
-            ((Farm)Buildings[worker.Id] as Farm).Start(_fieldMatrix);
+            (/*(Farm)*/Buildings[worker.Id] as Farm).Start(_fieldMatrix);
         }
 
         public void BuildStorage(int x, int y)
