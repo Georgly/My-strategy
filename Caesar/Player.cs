@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,51 +17,71 @@ namespace Caesar
         Canvas _field = new Canvas();
         int _year;
         int _peoples;
-        int _freePeoples;
+        int _freePeople;
         int[] _resources = new int[2]; //0-gold, 1-bread
         List<Road> roads;
         int lastXRoad, lastYRoad;
         Cell[,] _fieldMatrix;
         Rectangle testBuilding;
         int _id;
-        //Label yearL, foodL, goldL, manL;
-        //Graf _buildGraf;
         DispatcherTimer year = new DispatcherTimer();
         DispatcherTimer eat = new DispatcherTimer();
+        BackgroundWorker freeMan = new BackgroundWorker();
 
-        public Player(Canvas myCanvas/*, Label yearLab, Label foodLab, Label goldLab, Label manLab*/)
+        public Player(Canvas myCanvas)
         {
             Buildings = new List<IBuilding>();
             _id = 0;
-            //_buildGraf = new Graf();
             _field = myCanvas;
             Year = -30;
-            Peoples = 0;
-            FreePeoples = 0;
+            People = 0;
+            FreePeople = 0;
             Resources[0] = 3500;
             Resources[1] = 150;
             roads = new List<Road>();
             FieldCoord();
             testBuilding = new Rectangle();
             StartTimers();
-            //Refresh(null, null);
+            freeMan.DoWork += FreeMan_DoWork;
+            freeMan.WorkerSupportsCancellation = true;
         }
 
-        void StartTimers(/*Label yearLab, Label foodLab*/)
+        private void FreeMan_DoWork(object sender, DoWorkEventArgs e)
+        {
+            for (int i = 0; i < _fieldMatrix.GetLength(0); i++)
+            {
+                for (int j = 0; j < _fieldMatrix.GetLength(1); j++)
+                {
+                    if (_fieldMatrix[i, j].Type == 2)
+                    {
+                        Farm farm = (Buildings[_fieldMatrix[i, j].Id] as Farm);
+                        if (farm.needPeople)
+                        {
+                            farm.needPeople = false;
+                            FreePeople -= farm.WorkerCount;
+                            farm.Start(_fieldMatrix);
+                            freeMan.CancelAsync();
+                            break;
+                        }
+                    }
+                }
+            }
+            freeMan.CancelAsync();
+        }
+
+        void StartTimers()
         {
             year.Interval = TimeSpan.FromMinutes(12);
             year.Tick += Year_Tick;
             eat.Interval = TimeSpan.FromMinutes(1.5);
             eat.Tick += Eat_Tick;
-            //yearL = yearLab;
-            //foodL = foodLab;
             year.Start();
             eat.Start();
         }
 
         private void Eat_Tick(object sender, EventArgs e)
         {
-            Resources[1] -= Peoples;
+            Resources[1] -= People;
             Refresh(null, null);
         }
 
@@ -93,9 +114,9 @@ namespace Caesar
         //    manL.Dispatcher.InvokeAsync(() => { manL.Content = Peoples; });
         //}
 
-        void TakeMoney()//сбор налогов в конце года
+        void TakeMoney()
         {
-            Resources[0] += 2 * (Peoples - FreePeoples) + FreePeoples;
+            Resources[0] += 2 * (People - FreePeople) + FreePeople;
             Refresh(null, null);
         }
 
@@ -104,124 +125,6 @@ namespace Caesar
             Resources[1] += farm.Product;
             Refresh(null, null);
         }
-
-        //List<Cell> FindWay(int startPointX, int startPointY, int startWidth, /*int endPointX, int endPointY,*/ int endType, Cell[,] field)// not ready shit!
-        //{
-        //    Cell[,] map = field;
-        //    Cell endCell = new Cell(endType);
-        //    endCell.Weight = int.MaxValue;
-        //    Cell startCell = new Cell();
-        //    int weight = 0;
-        //    List<Cell> oldCelles = new List<Cell>();// точки из которых распространяется волна
-        //    List<Cell> findCelles = new List<Cell>();
-        //    List<Cell> path = new List<Cell>();
-        //    //Cell startCell = new Cell();
-        //    if (map[startPointY / 40 + startWidth / 40, startPointX / 40].Type == 5)
-        //    {
-        //        map[startPointY / 40 + startWidth / 40, startPointX / 40].Weight = weight;
-        //        startCell = map[startPointY / 40 + startWidth / 40, startPointX / 40];
-        //        oldCelles.Add(startCell);
-        //    }
-        //    // распространение волны
-        //    while (oldCelles.Count != 0)
-        //    {
-        //        weight++;
-        //        for (int i = 0; i < oldCelles.Count; i++)
-        //        {
-        //            Cell check = oldCelles[i];
-        //            //TODO посмотреть потом, как оптимизировать: убрать четыре ифа с одинаковым содержанием
-        //            if (check.XIndex > 0 && check.XIndex < map.GetLength(1) 
-        //                && check.YIndex - 1 > 0 && check.YIndex - 1 < map.GetLength(0))
-        //            {
-        //                if (!map[check.YIndex - 1, check.XIndex].Visit)
-        //                {
-        //                    if (map[check.YIndex - 1, check.XIndex].Type == endType)
-        //                    {
-        //                        map[check.YIndex - 1, check.XIndex].Weight = weight;
-        //                        if (map[check.YIndex - 1, check.XIndex].Weight < endCell.Weight)
-        //                        {
-        //                            endCell = map[check.YIndex - 1, check.XIndex];
-        //                        }
-        //                    }
-        //                    else if (map[check.YIndex - 1, check.XIndex].Type == 5)
-        //                    {
-        //                        map[check.YIndex - 1, check.XIndex].Weight = weight;
-        //                        findCelles.Add(map[check.YIndex - 1, check.XIndex]);
-        //                    }
-        //                }
-        //            }
-        //            if (check.XIndex + 1 > 0 && check.XIndex + 1 < map.GetLength(1)
-        //                && check.YIndex > 0 && check.YIndex < map.GetLength(0))
-        //            {
-        //                if (!map[check.YIndex, check.XIndex + 1].Visit)
-        //                {
-        //                    if (map[check.YIndex, check.XIndex + 1].Type == 5)
-        //                    {
-        //                        map[check.YIndex, check.XIndex + 1].Weight = weight;
-        //                        findCelles.Add(map[check.YIndex, check.XIndex + 1]);
-        //                    }
-        //                }
-        //            }
-        //            if (check.XIndex > 0 && check.XIndex < map.GetLength(1)
-        //                && check.YIndex + 1> 0 && check.YIndex + 1 < map.GetLength(0))
-        //            {
-        //                if (!map[check.YIndex + 1, check.XIndex].Visit)
-        //                {
-        //                    if (map[check.YIndex + 1, check.XIndex].Type == 5)
-        //                    {
-        //                        map[check.YIndex + 1, check.XIndex].Weight = weight;
-        //                        findCelles.Add(map[check.YIndex + 1, check.XIndex]);
-        //                    }
-        //                }
-        //            }
-        //            if (check.XIndex - 1 > 0 && check.XIndex - 1 < map.GetLength(1)
-        //                && check.YIndex > 0 && check.YIndex < map.GetLength(0))
-        //            {
-        //                if (!map[check.YIndex, check.XIndex - 1].Visit)
-        //                {
-        //                    if (map[check.YIndex, check.XIndex - 1].Type == 5)
-        //                    {
-        //                        map[check.YIndex, check.XIndex - 1].Weight = weight;
-        //                        findCelles.Add(map[check.YIndex, check.XIndex - 1]);
-        //                    }
-        //                }
-        //            }
-        //        }
-        //        oldCelles = findCelles;
-        //    }
-        //    // путь
-        //    if (endCell.Weight < map.Length)
-        //    {
-        //        Cell pathCell = map[endCell.YIndex + 1, endCell.XIndex];
-        //        //path.Add(pathCell);
-        //        while (pathCell.Weight != 0)
-        //        {
-        //            if (map[endCell.YIndex + 1, endCell.XIndex].Weight == pathCell.Weight - 1)
-        //            {
-        //                path.Add(pathCell);
-        //                pathCell = map[endCell.YIndex + 1, endCell.XIndex];
-        //            }
-        //            else if (map[endCell.YIndex, endCell.XIndex - 1].Weight == pathCell.Weight - 1)
-        //            {
-        //                path.Add(pathCell);
-        //                pathCell = map[endCell.YIndex, endCell.XIndex - 1];
-        //            }
-        //            else if (map[endCell.YIndex - 1, endCell.XIndex].Weight == pathCell.Weight - 1)
-        //            {
-        //                path.Add(pathCell);
-        //                pathCell = map[endCell.YIndex - 1, endCell.XIndex];
-        //            }
-        //            else if (map[endCell.YIndex, endCell.XIndex + 1].Weight == pathCell.Weight - 1)
-        //            {
-        //                path.Add(pathCell);
-        //                pathCell = map[endCell.YIndex, endCell.XIndex + 1];
-        //            }
-        //        }
-        //        path.Add(startCell);
-        //        return path;
-        //    }
-        //    return null;
-        //}
 
         void FieldCoord()
         {
@@ -285,35 +188,6 @@ namespace Caesar
             }
         }
 
-        //void FindRoad(int xCoord, int yCoord, int type, int width)
-        //{
-        //    GNode build = _buildGraf.FindNode(xCoord, yCoord);
-        //    if (_buildGraf.FindNode(xCoord, yCoord - 40) != null && _buildGraf.FindNode(xCoord, yCoord - 40).type == 5)
-        //    {
-        //        _buildGraf.selectNode = build;
-        //        _buildGraf.aimNode = _buildGraf.FindNode(xCoord, yCoord - 40);
-        //        _buildGraf.SemiEdge();
-        //    }
-        //    else if (_buildGraf.FindNode(xCoord + width, yCoord) != null && _buildGraf.FindNode(xCoord + width, yCoord).type == 5)
-        //    {
-        //        _buildGraf.selectNode = build;
-        //        _buildGraf.aimNode = _buildGraf.FindNode(xCoord + width, yCoord);
-        //        _buildGraf.SemiEdge();
-        //    }
-        //    else if (_buildGraf.FindNode(xCoord, yCoord + width) != null && _buildGraf.FindNode(xCoord, yCoord + width).type == 5)
-        //    {
-        //        _buildGraf.selectNode = build;
-        //        _buildGraf.aimNode = _buildGraf.FindNode(xCoord, yCoord + width);
-        //        _buildGraf.SemiEdge();
-        //    }
-        //    else if (_buildGraf.FindNode(xCoord - width, yCoord) != null && _buildGraf.FindNode(xCoord - width, yCoord).type == 5)
-        //    {
-        //        _buildGraf.selectNode = build;
-        //        _buildGraf.aimNode = _buildGraf.FindNode(xCoord - width, yCoord);
-        //        _buildGraf.SemiEdge();
-        //    }
-        //}
-
         public void BuildHouse(int x, int y)
         {
             int xCoord = RoundPosition(x);
@@ -324,13 +198,14 @@ namespace Caesar
                 //_buildGraf.AddNode(xCoord, yCoord, 1);
                 //FindRoad(xCoord, yCoord, 1, (int)home.Width);
                 Buildings.Add(home);
-                Peoples += home.MaxPeople;
-                FreePeoples += home.MaxPeople;
+                People += home.MaxPeople;
+                FreePeople += home.MaxPeople;
                 Resources[0] -= home.Cost;
                 home.Id = _id;
                 _field.Children.Add(home);
                 FillField((int)home.Width/* + xCoord, (int)home.Height + yCoord*/, xCoord, yCoord, _id, 1);
                 _id++;
+                freeMan.RunWorkerAsync();
                 //FindRoad(home);
             }
         }
@@ -349,9 +224,9 @@ namespace Caesar
                 Resources[0] -= farm.Cost;
                 //farm.Id = _id;
                 FillField((int)farm.Width/* + xCoord, (int)home.Height + yCoord*/, xCoord, yCoord, _id, 2);
-                if (farm.WorkerCount <= FreePeoples)
+                if (farm.WorkerCount <= FreePeople)
                 {
-                    FreePeoples -= farm.WorkerCount;
+                    FreePeople -= farm.WorkerCount;
                     farm.needPeople = false;
                     farm.Start(_fieldMatrix);
                     //farm.ReadyFood += TransportFood;
@@ -389,11 +264,11 @@ namespace Caesar
                 _field.Children.Add(storage);
                 Resources[0] -= storage.Cost;
                 storage.Id = _id;
-                if (storage.Worker <= FreePeoples)
-                {
-                    FreePeoples -= storage.Worker;
-                    storage.needPeople = false;
-                }
+                //if (storage.Worker <= FreePeoples)
+                //{
+                //    FreePeoples -= storage.Worker;
+                //    storage.needPeople = false;
+                //}
                 FillField((int)storage.Width/* + xCoord, (int)home.Height + yCoord*/, xCoord, yCoord, _id, 3);
                 _id++;
             }
@@ -512,16 +387,16 @@ namespace Caesar
             }
         }
 
-        public int Peoples
+        public int People
         {
             get { return _peoples; }
             set { _peoples = value; }
         }
 
-        public int FreePeoples
+        public int FreePeople
         {
-            get { return _freePeoples; }
-            set { _freePeoples = value; }
+            get { return _freePeople; }
+            set { _freePeople = value; }
         }
 
         public int[] Resources

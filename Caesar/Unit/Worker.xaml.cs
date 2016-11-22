@@ -22,7 +22,6 @@ namespace Caesar
     {
         public bool WithGoods { get; set; }
         public int Id { get; set; }
-        //int Direction { get; set; }
 
         public Worker(int x, int y, int id)
         {

@@ -21,26 +21,26 @@ namespace Caesar
     public partial class Storage : UserControl, IBuilding
     {
         const int cost = 150;
-        const int worker = 10;
-        public bool needPeople = true;
-        int _bread;
+        //const int worker = 10;
+        //public bool needPeople = true;
+        //int _bread;
         int _x, _y;
         public int Id { get; set; }
 
         public Storage(int x, int y)
         {
             InitializeComponent();
-            Bread = 0;
+            //Bread = 0;
             _x = x;
             _y = y;
             Margin = new Thickness(x, y, 0, 0);
         }
 
-        public int Bread
-        {
-            get { return _bread; }
-            set { _bread = value; }
-        }
+        //public int Bread
+        //{
+        //    get { return _bread; }
+        //    set { _bread = value; }
+        //}
 
         public int X
         {
@@ -59,9 +59,9 @@ namespace Caesar
             get { return cost; }
         }
 
-        public int Worker
-        {
-            get { return worker; }
-        }
+        //public int Worker
+        //{
+        //    get { return worker; }
+        //}
     }
 }

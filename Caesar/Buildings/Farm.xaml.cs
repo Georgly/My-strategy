@@ -94,6 +94,7 @@ namespace Caesar
                 fromStorage.Interval = TimeSpan.FromMilliseconds(25);
                 fromStorage.Tick += FromStorage_Tick;
                 fromStorage.Start();
+                SentFood(null, null);
             }
             else
             {
@@ -155,7 +156,8 @@ namespace Caesar
                             map[check.YIndex - 1, check.XIndex].Visit = true;
                             if (map[check.YIndex - 1, check.XIndex].Type == endType)
                             {
-                                if (check.XIndex - 1 >= 0 && map[check.YIndex - 1, check.XIndex - 1].Type == endType)
+                                if (check.XIndex - 1 >= 0 && map[check.YIndex - 1, check.XIndex - 1].Type == endType 
+                                    && map[check.YIndex - 1, check.XIndex].Id == map[check.YIndex - 1, check.XIndex - 1].Id)
                                 { }
                                 else
                                 {

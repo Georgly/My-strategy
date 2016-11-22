@@ -49,7 +49,7 @@ namespace Caesar
             }
             gold.Content = player.Resources[0];
             food.Content = player.Resources[1];
-            man.Content = player.Peoples;
+            man.Content = player.People;
         }
 
         private void house_Click(object sender, RoutedEventArgs e)

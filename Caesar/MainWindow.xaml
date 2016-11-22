@@ -5,29 +5,38 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Caesar"
         mc:Ignorable="d"
-        Title="MainWindow" MaxHeight="850" MaxWidth="1300" Height="850" Width="1300" KeyDown="Window_KeyDown" Closed="Window_Closed">
+        Title="MainWindow" MaxHeight="850" MaxWidth="1400" Height="850" Width="1400" KeyDown="Window_KeyDown" Closed="Window_Closed">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1163"/>
-            <ColumnDefinition Width="auto"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Canvas Width="1163" Height="819" Name="myCanvas" Background="SpringGreen"  MouseLeftButtonDown="myCanvas_MouseLeftButtonDown" MouseMove="myCanvas_MouseMove" MouseLeftButtonUp="myCanvas_MouseLeftButtonUp"/>
-        <StackPanel Grid.Column="1">
-            <Label Name="year" Margin="5" FontFamily="Castellar" FontSize="16" Padding="2" HorizontalAlignment="Center" />
-            <Label Name="gold" Margin="5" FontFamily="Castellar" FontSize="16" Padding="2" HorizontalAlignment="Center" />
-            <Label Name="food" Margin="5" FontFamily="Castellar" FontSize="16" Padding="2" HorizontalAlignment="Center" />
-            <Label Name="man" Margin="5" FontFamily="Castellar" FontSize="16" Padding="2" HorizontalAlignment="Center" />
-            <Button Name="house" Margin="5" FontFamily="Castellar" FontSize="16" Padding="2" Click="house_Click">House</Button>
-            <Button Name="farm" Margin="5" FontFamily="Castellar" FontSize="16" Padding="2" Click="farm_Click">Farm</Button>
-            <!--<Button Margin="5" FontFamily="Castellar" FontSize="16" Padding="2">Pistrinum</Button>
-            <Button Margin="5" FontFamily="Castellar" FontSize="16" Padding="2">vinea</Button>
-            <Button Margin="5" FontFamily="Castellar" FontSize="16" Padding="2">Winery</Button>-->
-            <Button Name="storage" Margin="5" FontFamily="Castellar" FontSize="16" Padding="2" Click="storage_Click">Storage</Button>
-            <!--<Button Margin="5" FontFamily="Castellar" FontSize="16" Padding="2">School</Button>
-            <Button Margin="5" FontFamily="Castellar" FontSize="16" Padding="2">theatrum</Button>-->
-            <Button Name="draw_well" Margin="5" FontFamily="Castellar" FontSize="16" Padding="2" Click="draw_well_Click">Draw-well</Button>
-            <!--<Button Margin="5" FontFamily="Castellar" FontSize="16" Padding="2">hospitium</Button>-->
-            <Button Name="road" Margin="5" FontFamily="Castellar" FontSize="16" Padding="2" Click="road_Click">Road</Button>
-        </StackPanel>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <StackPanel>
+                <Label Name="year" Margin="5" FontFamily="Castellar" FontSize="16" Padding="2" HorizontalAlignment="Center" />
+                <Label Name="gold" Margin="5" FontFamily="Castellar" FontSize="16" Padding="2" HorizontalAlignment="Center" />
+                <Label Name="food" Margin="5" FontFamily="Castellar" FontSize="16" Padding="2" HorizontalAlignment="Center" />
+                <Label Name="man" Margin="5" FontFamily="Castellar" FontSize="16" Padding="2" HorizontalAlignment="Center" />
+                <Button Name="house" Margin="5" FontFamily="Castellar" FontSize="16" Padding="2" Click="house_Click">House</Button>
+                <Button Name="farm" Margin="5" FontFamily="Castellar" FontSize="16" Padding="2" Click="farm_Click">Farm</Button>
+                <!--<Button Margin="5" FontFamily="Castellar" FontSize="16" Padding="2">Pistrinum</Button>
+                <Button Margin="5" FontFamily="Castellar" FontSize="16" Padding="2">vinea</Button>
+                <Button Margin="5" FontFamily="Castellar" FontSize="16" Padding="2">Winery</Button>-->
+                <Button Name="storage" Margin="5" FontFamily="Castellar" FontSize="16" Padding="2" Click="storage_Click">Storage</Button>
+                <!--<Button Margin="5" FontFamily="Castellar" FontSize="16" Padding="2">School</Button>
+                <Button Margin="5" FontFamily="Castellar" FontSize="16" Padding="2">theatrum</Button>-->
+                <Button Name="draw_well" Margin="5" FontFamily="Castellar" FontSize="16" Padding="2" Click="draw_well_Click">Draw-well</Button>
+                <!--<Button Margin="5" FontFamily="Castellar" FontSize="16" Padding="2">hospitium</Button>-->
+                <Button Name="road" Margin="5" FontFamily="Castellar" FontSize="16" Padding="2" Click="road_Click">Road</Button>
+            </StackPanel>
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden">
+                <TextBlock Name="Output" VerticalAlignment="Bottom" IsHyphenationEnabled="True" MinHeight="150" MaxHeight="150" FontFamily="Castellar"/>
+            </ScrollViewer>
+        </Grid>
     </Grid>
 </Window>
