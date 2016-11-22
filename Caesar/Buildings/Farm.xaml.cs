@@ -53,11 +53,11 @@ namespace Caesar
 
         public void Start(Cell[,] field)
         {
-            map = new Cell[field.GetLength(0), field.GetLength(0)];
+            map = new Cell[field.GetLength(0), field.GetLength(1)];
             work.Start();
             for (int i = 0; i < map.GetLength(0); i++)
             {
-                for (int j = 0; j < map.GetLength(0); j++)
+                for (int j = 0; j < map.GetLength(1); j++)
                 {
                     map[i, j] = field[i, j];
                 }
@@ -80,6 +80,8 @@ namespace Caesar
                 toStorage.Interval = TimeSpan.FromMilliseconds(25);
                 toStorage.Tick += ToStorage_Tick;
                 distance = _path.Count - 1;
+                worker.worker_img.Source = new BitmapImage(new Uri(
+                    "C:/Users/EgorV_000.PROMETEUS/Documentation/Univer/Programm/С#-proj/Caesar/Caesar/bin/Debug/Image/Worker.jpg"));
                 AddWorker(null, null);
                 toStorage.Start();
             }
@@ -93,6 +95,8 @@ namespace Caesar
                 fromStorage = new DispatcherTimer();
                 fromStorage.Interval = TimeSpan.FromMilliseconds(25);
                 fromStorage.Tick += FromStorage_Tick;
+                worker.worker_img.Source = new BitmapImage(new Uri(
+                    "C:/Users/EgorV_000.PROMETEUS/Documentation/Univer/Programm/С#-proj/Caesar/Caesar/bin/Debug/Image/AtWork.jpg"));
                 fromStorage.Start();
                 SentFood(null, null);
             }

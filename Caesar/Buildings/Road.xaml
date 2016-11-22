@@ -7,6 +7,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" Width="40" Height="40">
     <Grid>
-        <Rectangle Fill="Gray"/>
+        <Image Name="road_img" Stretch="Fill" Source="C:/Users/EgorV_000.PROMETEUS/Documentation/Univer/Programm/С#-proj/Caesar/Caesar/bin/Debug/Image/Road.jpg"/>
     </Grid>
 </UserControl>

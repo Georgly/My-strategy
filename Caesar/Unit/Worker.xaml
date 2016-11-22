@@ -7,6 +7,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="20" d:DesignWidth="20" Width="20" Height="20">
     <Grid>
-        <Canvas Background="Black"/>
+        <Image Name="worker_img" Stretch="Fill" Source="C:/Users/EgorV_000.PROMETEUS/Documentation/Univer/Programm/С#-proj/Caesar/Caesar/bin/Debug/Image/Worker.jpg"/>
     </Grid>
 </UserControl>

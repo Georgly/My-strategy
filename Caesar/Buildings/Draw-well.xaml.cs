@@ -32,10 +32,10 @@ namespace Caesar
             Margin = new Thickness(x, y, 0, 0);
         }
 
-        public void GiveWater()//nothing
-        {
+        //public void GiveWater()//nothing
+        //{
 
-        }
+        //}
 
         public int X
         {
